@@ -1,9 +1,9 @@
 from typing import Optional
-
+import os
 import collections
 import logging
 import threading
-from click.globals import resolve_color_default
+import shutil
 
 import PIL.Image
 import pygame
@@ -60,6 +60,11 @@ class GetPixel(VisualDbgLog):
         super().__init__(x, y, target_area)
     
 
+class Tap(VisualDbgLog):
+    def __init__(self, org_x, org_y, x, y, target_area) -> None:
+        self.text = f'tap {org_x} {org_y} -> {x} {y}'
+        super().__init__(x, y, target_area)
+
 
 class AnreDebug(anre.Anre):
     def __init__(self) -> None:
@@ -71,10 +76,16 @@ class AnreDebug(anre.Anre):
         pygame.init()
         FONT = pygame.font.SysFont('Cantarel', 12)
         self.dbg_screen = pygame.display.set_mode((1000, 1000))
-        self.dbg_thread = threading.Thread(target=self.dbg_draw_loop)
-        self.dbg_thread.start()
         self.dbg_scale = 1
         self.dbg_log = collections.deque(maxlen=50)
+        self.dbg_running = True
+        self.dbg_thread = threading.Thread(target=self.dbg_draw_loop)
+        self.dbg_thread.start()
+
+        self.dbg_log_entries = 0
+        if os.path.exists("log"):
+            shutil.rmtree("log")
+        os.mkdir("log")
 
     def update_screencap(self) -> PIL.Image.Image:
         result = super().update_screencap()
@@ -94,6 +105,15 @@ class AnreDebug(anre.Anre):
         self._vizual_log(org_x, org_y, x, y, GetPixel, result)
         return result
 
+    def tap(self, org_x, org_y):
+        x, y = self.parse_coords(org_x, org_y)
+        self._vizual_log(org_x, org_y, x, y, Tap)
+        self._log_screencap()
+        return super().tap(x, y)
+    
+    def _log_screencap(self):
+        self.screencap.save(f"log/{self.dbg_log_entries}.png")
+        self.dbg_log_entries += 1
 
     def _vizual_log(self, org_x, org_y, x, y, log_cls, *args):
         target_area = self.screencap.crop((x - 5, y - 5, x+6, y+6))
@@ -104,8 +124,7 @@ class AnreDebug(anre.Anre):
 
     def dbg_draw_loop(self):
         clock = pygame.time.Clock()
-        running = True
-        while running:
+        while self.dbg_running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -129,3 +148,7 @@ class AnreDebug(anre.Anre):
         
         pygame.quit()
         # also stop rest of the program?
+    
+    def close(self):
+        self.dbg_running = False
+        self.dbg_thread.join()
