@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "afka"
+version = "0.1.0"
+description = ""
+authors = ["Florian Ludwig <vierzigundzwei@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+adb-shell = {extras = ["usb"], version = "^0.3.0"}
+pure-python-adb = "^0.3.0-alpha.0"
+pillow = "^8.0.1"
+
+[tool.poetry.dev-dependencies]
+pygame = "^2.0.0"
+click = "^7.1.2"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
