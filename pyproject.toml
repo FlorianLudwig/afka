@@ -9,10 +9,16 @@ python = "^3.6"
 adb-shell = {extras = ["usb"], version = "^0.3.0"}
 pure-python-adb = "^0.3.0-alpha.0"
 pillow = "^8.0.1"
+pytesseract = "^0.3.7"
+opencv-python = "^4.4.0"
+numpy = "^1.19.4"
 
 [tool.poetry.dev-dependencies]
 pygame = "^2.0.0"
 click = "^7.1.2"
+
+[tool.poetry.scripts]
+afka = 'afka.cli:main'
 
 [build-system]
 requires = ["poetry>=0.12"]
