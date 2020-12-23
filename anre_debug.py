@@ -22,9 +22,6 @@ def calc_scale(src_width, src_height, dst_width, dst_height):
 
 
 class DbgLog:
-    def __init__(self) -> None:
-        pass
-
     def draw_on_screenshot(self, target, scale=1):
         pass
 
@@ -32,14 +29,18 @@ class DbgLog:
         pass
 
 
-class GetPixel(DbgLog):
-    def __init__(self, x, y, result, target_area) -> None:
+class VisualDbgLog:
+    text = ""
+
+    def __init__(self, x, y, target_area) -> None:
         self.x = x
         self.y = y
-        self.result = result
         self.target_area = target_area
-        self.textsurface = FONT.render(f'get_pixel {x} {y} = {result}', True, (255, 255, 255), (0, 0, 0))
-    
+        self.render_text()
+
+    def render_text(self):
+        self.textsurface = FONT.render(self.text, True, (255, 255, 255), (0, 0, 0))
+
     def draw_on_screenshot(self, target, scale=1):
         pygame.draw.line(target, RED, (self.x*scale-10, self.y*scale), (self.x*scale-1, self.y*scale), 5)
         pygame.draw.line(target, RED, (self.x*scale+1, self.y*scale), (self.x*scale+10, self.y*scale), 5)
@@ -50,8 +51,14 @@ class GetPixel(DbgLog):
     def draw_log(self, target, start_x, start_y) -> int:
         target.blit(self.target_area, (start_x, start_y))
         target.blit(self.textsurface, (start_x + 60, start_y))
-
         # pygame.draw.line(target, RED, (start_x, start_x), (start_x, start_x), 5)
+
+
+class GetPixel(VisualDbgLog):
+    def __init__(self, org_x, org_y, x, y, target_area, result) -> None:
+        self.text = f'get_pixel {org_x} {org_y} -> {x} {y} = {result}'
+        super().__init__(x, y, target_area)
+    
 
 
 class AnreDebug(anre.Anre):
@@ -74,7 +81,6 @@ class AnreDebug(anre.Anre):
         self.dbg_scale = calc_scale(*result.size, 500, 1000)
         
         target_size = [int(i * self.dbg_scale) for i in result.size]
-        print(self.dbg_scale, target_size)
         scaled = result.resize(target_size)
         raw = scaled.tobytes("raw", 'RGBA')
         surface = pygame.image.fromstring(raw, scaled.size, 'RGBA')
@@ -82,14 +88,19 @@ class AnreDebug(anre.Anre):
         self.dbg_latest_screenshot = surface
         return result
 
-    def get_pixel(self, x, y, update):
+    def get_pixel(self, org_x, org_y, update):
+        x, y = self.parse_coords(org_x, org_y)
         result = super().get_pixel(x, y, update=update)
+        self._vizual_log(org_x, org_y, x, y, GetPixel, result)
+        return result
+
+
+    def _vizual_log(self, org_x, org_y, x, y, log_cls, *args):
         target_area = self.screencap.crop((x - 5, y - 5, x+6, y+6))
         target_area = target_area.resize((55, 55), PIL.Image.NEAREST)
         raw = target_area.tobytes("raw", 'RGBA')
         surface = pygame.image.fromstring(raw, target_area.size, 'RGBA')
-        self.dbg_log.append(GetPixel(x, y, result, surface))
-        return result
+        self.dbg_log.append(log_cls(org_x, org_y, x, y, surface, *args))
 
     def dbg_draw_loop(self):
         clock = pygame.time.Clock()
