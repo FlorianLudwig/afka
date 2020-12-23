@@ -6,6 +6,11 @@ A small tool to speed up afk arena, to be more afk.
 
 -->
 
+## License and Copyright
+
+All code is Apache 2.0 licensed.
+The images in `afk/res` are screenshots of the game and copyright by Lilith.
+
 
 ## Develop
 
