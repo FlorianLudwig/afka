@@ -2,9 +2,10 @@
 
 A small tool to speed up afk arena, to be more afk.
 
-<!-- Inspired by: 
+Inspired by: 
 
--->
+ * https://github.com/zebscripts/AFK-Daily
+ * https://github.com/oscarcx123/afk-arena-tools
 
 ## License and Copyright
 
