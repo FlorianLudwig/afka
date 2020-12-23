@@ -129,7 +129,7 @@ class Anre:
                 return x, y
             self.update_screencap()
         
-        raise ValueError(f"Image {image_path} not found")
+        raise ValueError(f"Image {image_path} not found on screen")
 
     def tap_image(self, image_path, timeout=60, threshold=0.9):
         x, y = self.wait_for_image(image_path, timeout=60, threshold=0.9)
