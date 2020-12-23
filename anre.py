@@ -34,6 +34,11 @@ def parse_coordinate(value, v100):
     raise ValueError("Unknown cooridate " + repr(value))
 
 
+def convert_to_bitmap(pixel):
+    result = 1 if pixel > 200 else 0
+    return result
+
+
 class Anre:
     def __init__(self, ) -> None:
         self.client = ppadb.client.Client()
@@ -104,35 +109,57 @@ class Anre:
     def close_app(self, activity):
         print(self.device.shell("am force-stop " + activity))
     
-    def _load_image(self, image_path):
-        if image_path not in self._image_cache:
-            self._image_cache[image_path] = cv.imread(image_path, cv.IMREAD_COLOR)
-        return self._image_cache[image_path]
+    def _load_image(self, image_path: str, scale: float=1.0) -> tuple:
+        key = f'{image_path}.{scale}'
+        if key not in self._image_cache:
+            alpha = None
+            src = PIL.Image.open(image_path)
+            src = src.resize((int(src.size[0] * scale), int(src.size[1] * scale)))
 
-    def find_image(self, image_path: str) -> tuple:
-        template = self._load_image(image_path)
-        result = cv.matchTemplate(self.screencap_cv, template, cv.TM_CCOEFF_NORMED)
+            if src.mode not in ("RGB", "RGBA"):
+                src = src.convert("RGBA")
+
+            if src.mode == "RGBA":
+                alpha_channel = src.getchannel("A")
+                alpha_channel = alpha_channel.point(convert_to_bitmap)
+                alpha = PIL.Image.merge("RGB", (alpha_channel, alpha_channel, alpha_channel))
+                src = src.convert('RGB')
+        
+            open_cv_image = numpy.array(src)
+            open_cv_image = open_cv_image[:, :, ::-1].copy()
+
+            open_cv_mask = None
+            if alpha:
+                open_cv_mask = numpy.array(alpha)
+                open_cv_mask = open_cv_mask[:, :, ::-1].copy()
+            
+            self._image_cache[key] = (open_cv_image, open_cv_mask)
+        return self._image_cache[key]
+
+    def find_image(self, image_path: str, scale: float=1.0) -> tuple:
+        template, mask = self._load_image(image_path, scale)
+        result = cv.matchTemplate(self.screencap_cv, template, cv.TM_CCOEFF_NORMED, None, mask)
         _, max_val, _, max_loc = cv.minMaxLoc(result)
         x = max_loc[0] + template.shape[1] / 2
         y = max_loc[1] + template.shape[0] / 2
         return max_val, x, y
 
-    def wait_for_image(self, image_path: str, timeout=60, threshold=0.9):
+    def wait_for_image(self, image_path: str, scale=1.0, timeout=60, threshold=0.9):
         start_time = time.time()
 
         if not self.screencap:
             self.update_screencap()
         
         while time.time() < start_time + timeout:
-            max_val, x, y = self.find_image(image_path)
+            max_val, x, y = self.find_image(image_path, scale=scale)
             if max_val >= threshold:
                 return x, y
             self.update_screencap()
         
         raise ValueError(f"Image {image_path} not found on screen")
 
-    def tap_image(self, image_path, timeout=60, threshold=0.9):
-        x, y = self.wait_for_image(image_path, timeout=60, threshold=0.9)
+    def tap_image(self, image_path, scale=1.0, threshold=0.9, timeout=60):
+        x, y = self.wait_for_image(image_path, scale=scale, timeout=timeout, threshold=threshold)
         self.tap(x, y)
         return x, y
 
