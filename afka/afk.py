@@ -76,6 +76,16 @@ class AFKArena:
 
         self.tap_image("collect_yellow")
 
+    def guild_hunt(self):
+        self.switch_tab("ranhorn")
+        self.ar.tap("30%", "15%")
+        self.tap_image("guild_hunting")
+        self.tap_image("guild_hunt_challenge") # start challenge
+        time.sleep(0.1)
+        self.tap_image("guild_hunt_challenge") # begin battle (confirms formation)
+        time.sleep(60)
+        self.tap_image("tap_to_close")
+
     def fight_campaign(self):
         self.switch_tab("campaign")
         self.ar.tap("50%", -280)
