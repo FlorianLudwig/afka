@@ -19,21 +19,19 @@ def main(debug):
 
     afk = afka.afk.AFKArena(ar)
 
-    # afk.close_app()
-    # afk.start_app()
-    # afk.wait_until_loaded()
+    afk.close_app()
+    afk.start_app()
+    afk.wait_until_loaded()
 
-    # afk.switch_tab("campaign")
-    # afk.switch_tab("ranhorn")
-    # afk.switch_tab("dark_forest")
-    # afk.loot_afk_chest()
+    afk.loot_afk_chest()
     afk.loot_fast_rewards()
+    afk.guild_hunt()
+    afk.collect_quest_rewards()
 
     afk.ar.update_screencap()
     afk.ar.tap(10, 10)
 
     afk.close()
-
 
 
 if __name__ == "__main__":

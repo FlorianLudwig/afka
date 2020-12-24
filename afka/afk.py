@@ -4,15 +4,16 @@ from PIL.ImageOps import scale
 import anre
 import time
 import enum
+import logging
 
 import pkg_resources
-import logging
 
 
 class Screen(enum.Enum):
     pass
 
 
+LOG = logging.getLogger(__name__)
 AVOID_DOUBLE_TAB_DELAY = 0.1
 
 
@@ -76,12 +77,13 @@ class AFKArena:
         return self.ar.wait_for_image(collect, timeout=timeout, threshold=threshold, scale=scale)
 
     def loot_afk_chest(self):
-        self.switch_tab("campaign")
+        self.switch_to("campaign")
         self.ar.tap("50%", -450)  # tap on pile of loot
-        self.tap_image("collect_blue")  # tap collect button
+        self.tap_image("blue_button")  # tap collect button
+        time.sleep(AVOID_DOUBLE_TAB_DELAY)
 
     def loot_fast_rewards(self, spend_diamonds=False):
-        self.switch_tab("campaign")
+        self.switch_to("campaign")
         self.tap_image("fast_rewards")
         self.wait_for_image("popup")
 
@@ -92,18 +94,28 @@ class AFKArena:
                 return
             else:
                 print("fast rewards only available for diamonds and spend_diamonds=False")
+                self.ar.tap(10, 10)
+                time.sleep(0.5)
                 return
 
         self.tap_image("collect_yellow")
+        time.sleep(AVOID_DOUBLE_TAB_DELAY)
+        self.tap(10, 10)
+        time.sleep(0.5)
 
     def guild_hunt(self):
         self.switch_to("guild")
         self.tap_image("guild_hunting")
-        self.tap_image("guild_hunt_challenge") # start challenge
-        time.sleep(0.1)
-        self.tap_image("guild_hunt_challenge") # begin battle (confirms formation)
-        time.sleep(60)
-        self.tap_image("tap_to_close")
+        for _ in range(2):
+            try:
+                self.tap_image("guild_hunt_challenge", timeout=10) # start challenge
+            except ValueError:
+                print("Looks like guild hunting already done")
+                return
+            time.sleep(0.1)
+            self.tap_image("guild_hunt_challenge") # begin battle (confirms formation)
+            time.sleep(60)
+            self.tap_image("tap_to_close")
 
     def click_all_image(self, image_name, scale=1.0, threshold=0.9):
         while True:
@@ -115,14 +127,14 @@ class AFKArena:
 
     def collect_quest_rewards(self):
         self.switch_to("quests_dailies")
-        self.click_all_image("collect_blue", threshold=0.7, scale=0.85)
+        self.click_all_image("blue_button", threshold=0.7, scale=0.85)
 
         # self.switch_to("quests_weeklies")
 
         # self.switch_to("quests_campaign")
 
     def fight_campaign(self):
-        self.switch_tab("campaign")
+        self.switch_to("campaign")
         self.ar.tap("50%", -280)
 
     def close(self):
