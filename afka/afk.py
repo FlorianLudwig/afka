@@ -36,6 +36,7 @@ class AFKArena:
         print("done loading")
 
     def switch_to(self, target):
+        LOG.debug("switch from %s to %s", self.current_screen, target)
         if self.current_screen == target:
             return
 
@@ -47,19 +48,30 @@ class AFKArena:
             "chat": "90%",
         }
 
-        if target in main_screens:
-            # TODO check if tabs are visible
-            x = main_screens[target]
-            self.ar.tap(x, -10)
-
         if target == "guild":
             self.switch_to("ranhorn")
             self.ar.tap("30%", "15%")
             time.sleep(AVOID_DOUBLE_TAB_DELAY)
         
-        if target == "quests_dailies":
+        elif target == "quests_dailies":
+            self.click_all_image("back", timeout=3)
             self.tap_image("quests")
             time.sleep(AVOID_DOUBLE_TAB_DELAY)
+
+        elif target == "guild_hunting":
+            self.switch_to("guild")
+            self.tap_image("guild_hunting")
+
+        elif target in main_screens:
+            # we want to go to one of the main screens, ensure there
+            # is no back button visible (meaning we are in one of the)
+            # subscreens
+            self.click_all_image("back", timeout=5)
+            x = main_screens[target]
+            self.ar.tap(x, -10)
+        
+        else:
+            raise AttributeError(f"Unkown screen '{target}'")
 
         # TODO verify we successfully reached desired screen
         self.current_screen = target
@@ -100,12 +112,11 @@ class AFKArena:
 
         self.tap_image("collect_yellow")
         time.sleep(AVOID_DOUBLE_TAB_DELAY)
-        self.tap(10, 10)
+        self.ar.tap(10, 10)
         time.sleep(0.5)
 
     def guild_hunt(self):
-        self.switch_to("guild")
-        self.tap_image("guild_hunting")
+        self.switch_to("guild_hunting")
         for _ in range(2):
             try:
                 self.tap_image("guild_hunt_challenge", timeout=10) # start challenge
@@ -116,12 +127,14 @@ class AFKArena:
             self.tap_image("guild_hunt_challenge") # begin battle (confirms formation)
             time.sleep(60)
             self.tap_image("tap_to_close")
+            self.tap_image("tap_to_close")
 
-    def click_all_image(self, image_name, scale=1.0, threshold=0.9):
+    def click_all_image(self, image_name, scale=1.0, threshold=0.9, timeout=10):
+        LOG.debug("Click all %s images", image_name)
         while True:
             self.ar.update_screencap()
             try:
-                self.tap_image(image_name, scale=scale, threshold=threshold, timeout=10)
+                self.tap_image(image_name, scale=scale, threshold=threshold, timeout=timeout)
             except ValueError:
                 return
 
