@@ -1,21 +1,25 @@
+import logging
+
 import click
 import anre
 
 import afka.afk
+
+LOG = logging.getLogger(__name__)
 
 
 @click.command()
 @click.option("--debug", is_flag=True, default=False)
 def main(debug):
     if debug:
-        print("starting in debug mode")
+        LOG.info("starting in debug mode")
         import anre_debug
         ar = anre_debug.AnreDebug()
     else:
         ar = anre.Anre()
     ar.auto_select_device()
 
-    print("device selected:", ar.device.serial)
+    LOG.info("device selected: " + ar.device.serial)
 
     afk = afka.afk.AFKArena(ar)
 
