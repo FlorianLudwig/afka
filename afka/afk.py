@@ -153,6 +153,7 @@ class AFKArena:
         LOG.info("starting collect_quest_rewards")
         self.switch_to("quests_dailies")
         self.click_all_image("blue_button", threshold=0.7, scale=0.85)
+        self.click_all_image("quest_reward", threshold=0.7, scale=0.85)
 
         # self.switch_to("quests_weeklies")
 
