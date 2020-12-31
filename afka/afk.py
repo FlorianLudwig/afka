@@ -1,6 +1,5 @@
 """Interface to the game"""
 
-from PIL.ImageOps import scale
 import anre
 import time
 import enum
@@ -119,6 +118,8 @@ class AFKArena:
 
         else:
             self.tap_image("collect_yellow")
+        time.sleep(AVOID_DOUBLE_TAB_DELAY)
+        self.ar.tap(10, 10)
         time.sleep(AVOID_DOUBLE_TAB_DELAY)
         self.ar.tap(10, 10)
         time.sleep(AVOID_DOUBLE_TAB_DELAY)
