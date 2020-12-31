@@ -4,7 +4,7 @@ import time
 from typing import Optional
 import logging
 import io
-from pkg_resources import resource_filename
+import os
 
 import ppadb.client
 import ppadb.device
@@ -47,6 +47,8 @@ class Anre:
         self._screencap_cv = None
         self.screencap_data = None
         self._image_cache = {}
+        # ensure adb server is running
+        os.system("adb start-server")
 
     @property
     def screencap_cv(self):

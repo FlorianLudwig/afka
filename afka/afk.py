@@ -8,9 +8,18 @@ import logging
 import pkg_resources
 
 
-class Screen(enum.Enum):
-    pass
+class MainScreen(enum.Enum):
+    RANHORN = "ranhorn"
+    DARK_FOREST = "dark_forest"
+    CAMPAIGN = "campaign"
+    HEROS = "heros"
+    CHAT = "chat"
 
+
+class Screen(enum.Enum):
+    MAIL = "mail"
+    BAG = "bag"
+    FRIENDS = "friends"
 
 logging.basicConfig(level=logging.INFO)
 
@@ -22,7 +31,7 @@ class AFKArena:
     def __init__(self, ar: anre.Anre) -> None:
         self.ar = ar
         self.activity_name = "com.lilithgame.hgame.gp"
-        self.current_screen = "campaign"
+        self.current_screen = MainScreen.CAMPAIGN
     
     def start_app(self):
         self.ar.start_app(self.activity_name)
@@ -43,15 +52,25 @@ class AFKArena:
             return
 
         main_screens = {
-            "ranhorn": "10%",
-            "dark_forest": "30%",
-            "campaign": "50%",
-            "heros": "70%",
-            "chat": "90%",
+            MainScreen.RANHORN: "10%",
+            MainScreen.DARK_FOREST: "30%",
+            MainScreen.CAMPAIGN: "50%",
+            MainScreen.HEROS: "70%",
+            MainScreen.CHAT: "90%",
         }
 
-        if target == "guild":
-            self.switch_to("ranhorn")
+        if target == Screen.FRIENDS:
+            self.switch_to(MainScreen.CAMPAIGN)
+            self.click_all_image("menu_arrow")
+            self.tap_image("friends")
+        
+        elif target == Screen.MAIL:
+            self.switch_to(MainScreen.CAMPAIGN)
+            self.click_all_image("menu_arrow")
+            self.tap_image("mail")
+        
+        elif target == "guild":
+            self.switch_to(MainScreen.RANHORN)
             self.ar.tap("30%", "15%")
             time.sleep(AVOID_DOUBLE_TAB_DELAY)
         
@@ -71,7 +90,6 @@ class AFKArena:
             self.click_all_image("back", timeout=5)
             x = main_screens[target]
             self.ar.tap(x, -10)
-        
         else:
             raise AttributeError(f"Unkown screen '{target}'")
 
@@ -93,7 +111,7 @@ class AFKArena:
 
     def loot_afk_chest(self):
         LOG.info("starting loot_afk_chest")
-        self.switch_to("campaign")
+        self.switch_to(MainScreen.campaign)
         self.ar.tap("50%", -450)  # tap on pile of loot
         self.tap_image("blue_button")  # tap collect button
         time.sleep(AVOID_DOUBLE_TAB_DELAY)
@@ -101,7 +119,7 @@ class AFKArena:
 
     def loot_fast_rewards(self, spend_diamonds=False):
         LOG.info("starting loot_fast_rewards")
-        self.switch_to("campaign")
+        self.switch_to(MainScreen.campaign)
         self.tap_image("fast_rewards")
         self.wait_for_image("popup")
 
@@ -124,6 +142,15 @@ class AFKArena:
         self.ar.tap(10, 10)
         time.sleep(AVOID_DOUBLE_TAB_DELAY)
         LOG.info("done loot_fast_rewards")
+
+    def friends_send_and_receive(self):
+        self.switch_to(Screen.FRIENDS)
+        # tap Send & Receive button
+        self.tap_image("and")
+    
+    def collect_mail(self):
+        self.switch_to(Screen.MAIL)
+        self.tap_image("blue_button")
 
     def guild_hunt(self):
         LOG.info("starting guild_hunt")
@@ -162,7 +189,7 @@ class AFKArena:
         LOG.info("done collect_quest_rewards")
 
     def fight_campaign(self):
-        self.switch_to("campaign")
+        self.switch_to(MainScreen.campaign)
         self.ar.tap("50%", -280)
 
     def close(self):
