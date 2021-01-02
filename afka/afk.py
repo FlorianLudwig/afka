@@ -144,13 +144,17 @@ class AFKArena:
         LOG.info("done loot_fast_rewards")
 
     def friends_send_and_receive(self):
+        LOG.info("starting friends_send_and_receive")
         self.switch_to(Screen.FRIENDS)
         # tap Send & Receive button
         self.tap_image("and")
+        LOG.info("done friends_send_and_receive")
     
     def collect_mail(self):
+        LOG.info("starting collect_mail")
         self.switch_to(Screen.MAIL)
         self.tap_image("blue_button")
+        LOG.info("done collect_mail")
 
     def guild_hunt(self):
         LOG.info("starting guild_hunt")
