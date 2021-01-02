@@ -111,7 +111,7 @@ class AFKArena:
 
     def loot_afk_chest(self):
         LOG.info("starting loot_afk_chest")
-        self.switch_to(MainScreen.campaign)
+        self.switch_to(MainScreen.CAMPAIGN)
         self.ar.tap("50%", -450)  # tap on pile of loot
         self.tap_image("blue_button")  # tap collect button
         time.sleep(AVOID_DOUBLE_TAB_DELAY)
@@ -119,7 +119,7 @@ class AFKArena:
 
     def loot_fast_rewards(self, spend_diamonds=False):
         LOG.info("starting loot_fast_rewards")
-        self.switch_to(MainScreen.campaign)
+        self.switch_to(MainScreen.CAMPAIGN)
         self.tap_image("fast_rewards")
         self.wait_for_image("popup")
 
@@ -189,7 +189,7 @@ class AFKArena:
         LOG.info("done collect_quest_rewards")
 
     def fight_campaign(self):
-        self.switch_to(MainScreen.campaign)
+        self.switch_to(MainScreen.CAMPAIGN)
         self.ar.tap("50%", -280)
 
     def close(self):
