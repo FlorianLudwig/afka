@@ -30,8 +30,10 @@ def main(debug):
     afk.loot_afk_chest()
     afk.loot_fast_rewards()
     afk.guild_hunt()
+    afk.friends_send_and_receive()
+    afk.collect_mail()
     afk.collect_quest_rewards()
-
+    
     afk.ar.update_screencap()
     afk.ar.tap(10, 10)
 
