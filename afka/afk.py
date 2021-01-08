@@ -74,8 +74,8 @@ class AFKArena:
             self.ar.tap("30%", "15%")
             time.sleep(AVOID_DOUBLE_TAB_DELAY)
         
-        elif target == "quests_dailies":
-            self.click_all_image("back", timeout=3)
+        elif target == Screen.QUESTS_DAILIES:
+            self.switch_to(MainScreen.CAMPAIGN)
             self.tap_image("quests")
             time.sleep(AVOID_DOUBLE_TAB_DELAY)
 
@@ -183,11 +183,11 @@ class AFKArena:
 
     def collect_quest_rewards(self):
         LOG.info("starting collect_quest_rewards")
-        self.switch_to("quests_dailies")
+        self.switch_to(Screen.QUESTS_DAILIES)
         self.click_all_image("blue_button", threshold=0.7, scale=0.85)
         self.click_all_image("quest_reward", threshold=0.7, scale=0.85)
 
-        # self.switch_to("quests_weeklies")
+        # self.switch_to(Screen.QUESTS_DAILIES)
 
         # self.switch_to("quests_campaign")
         LOG.info("done collect_quest_rewards")
