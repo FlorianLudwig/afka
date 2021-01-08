@@ -18,11 +18,16 @@ Inspired by:
  - [ ] Fight in the Arena of Heroes
  - [ ] Fight in the Legends Tournament
  - [ ] Fight in the Kings Tower
- - [x] Fight Wrizz
- - [ ] Fight Soren if available. Can also open Soren for you.
+ - [ ] Guild Features
+     - [x] Fight Wrizz
+     - [ ] Fight Soren if available
+     - [ ] Open Soren
  - [ ] Fight in the Twisted Realm
  - [ ] Buy daily Dust from the Store
- - [x] Collect daily Quest Chests
+ - [ ] Collect Quest Chests
+     - [x] daily
+     - [ ] weekly
+     - [ ] capmaign
  - [x] Collect Mail
  - [ ] Collect Daily/Weekly/Monthly rewards from Merchants
  - [ ] Collect Oak Inn presents
