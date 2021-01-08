@@ -193,8 +193,16 @@ class AFKArena:
         LOG.info("done collect_quest_rewards")
 
     def fight_campaign(self):
+        LOG.info("starting fight_campaign")
         self.switch_to(MainScreen.CAMPAIGN)
-        self.ar.tap("50%", -280)
+        self.tap_image("guild_hunt_challenge") # begin battle
+        time.sleep(1)
+        self.ar.update_screencap()
+        self.tap_image("guild_hunt_challenge") # begin battle (confirms formation)
+        self.tap_image("touch_screen_to_continue", timeout=160)
+        self.tap_image("touch_screen_to_continue", timeout=10)
+        LOG.info("done collect_quest_rewards")
+        
 
     def close(self):
         self.ar.close()

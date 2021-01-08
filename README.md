@@ -10,7 +10,7 @@ Inspired by:
 ## Features
 
  - [x] Loot AFK chest
- - [ ] Fight the current campaign level
+ - [x] Fight the current campaign level
  - [x] Collect Fast Rewards
  - [x] Send Companion Points to friends
  - [ ] Auto Lend Mercenaries

@@ -27,6 +27,7 @@ def main(debug):
     afk.start_app()
     afk.wait_until_loaded()
 
+    afk.fight_campaign()
     afk.loot_afk_chest()
     afk.loot_fast_rewards()
     afk.guild_hunt()
