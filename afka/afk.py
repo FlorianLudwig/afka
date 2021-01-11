@@ -20,6 +20,12 @@ class Screen(enum.Enum):
     MAIL = "mail"
     BAG = "bag"
     FRIENDS = "friends"
+    QUESTS_DAILIES = "quests_dailies"
+    QUESTS_WEEKLY = "quests_weekly"
+    QUESTS_CAMPAIGN = "quests_campaign"
+    BOUNTY_QUESTS = "bounty_quests"
+    BOUNTY_TEAM = "bounty_team"
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -66,7 +72,7 @@ class AFKArena:
         
         elif target == Screen.MAIL:
             self.switch_to(MainScreen.CAMPAIGN)
-            self.click_all_image("menu_arrow")
+            self.click_all_image("menu_arrow", timeout=3)
             self.tap_image("mail")
         
         elif target == "guild":
@@ -79,6 +85,10 @@ class AFKArena:
             self.tap_image("quests")
             time.sleep(AVOID_DOUBLE_TAB_DELAY)
 
+        elif target == Screen.BOUNTY_QUESTS:
+            self.switch_to(MainScreen.DARK_FOREST)
+            self.tap_image("bounty_board")
+            time.sleep(AVOID_DOUBLE_TAB_DELAY)
         elif target == "guild_hunting":
             self.switch_to("guild")
             self.tap_image("guild_hunting")
@@ -172,7 +182,7 @@ class AFKArena:
             self.tap_image("tap_to_close")
         LOG.info("done guild_hunt")
 
-    def click_all_image(self, image_name, scale=1.0, threshold=0.9, timeout=10):
+    def click_all_image(self, image_name, scale=1.0, threshold=0.9, timeout=5):
         LOG.debug("Click all %s images", image_name)
         while True:
             self.ar.update_screencap()
