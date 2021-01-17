@@ -72,10 +72,6 @@ class AnreDebug(anre.Anre):
         super().__init__()
 
         self.dbg_latest_screenshot = None
-
-        pygame.init()
-        FONT = pygame.font.SysFont('Cantarel', 12)
-        self.dbg_screen = pygame.display.set_mode((1000, 1000))
         self.dbg_scale = 1
         self.dbg_log = collections.deque(maxlen=50)
         self.dbg_running = True
@@ -123,6 +119,10 @@ class AnreDebug(anre.Anre):
         self.dbg_log.append(log_cls(org_x, org_y, x, y, surface, *args))
 
     def dbg_draw_loop(self):
+        pygame.init()
+        FONT = pygame.font.SysFont('Cantarel', 12)
+        self.dbg_screen = pygame.display.set_mode((1000, 1000))
+
         clock = pygame.time.Clock()
         while self.dbg_running:
             for event in pygame.event.get():
