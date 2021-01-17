@@ -127,7 +127,7 @@ class AnreDebug(anre.Anre):
         while self.dbg_running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
+                    self.dbg_running = False
 
             if self.dbg_latest_screenshot:
                 self.dbg_screen.blit(self.dbg_latest_screenshot, (0, 0))
