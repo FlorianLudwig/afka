@@ -75,8 +75,12 @@ class AnreDebug(anre.Anre):
         self.dbg_scale = 1
         self.dbg_log = collections.deque(maxlen=50)
         self.dbg_running = True
+
+        self.dbg_thread_raedy_condition = threading.Condition()
         self.dbg_thread = threading.Thread(target=self.dbg_draw_loop)
         self.dbg_thread.start()
+        with self.dbg_thread_raedy_condition:
+            self.dbg_thread_raedy_condition.wait()
 
         self.dbg_log_entries = 0
         if os.path.exists("log"):
@@ -124,6 +128,8 @@ class AnreDebug(anre.Anre):
         pygame.init()
         FONT = pygame.font.SysFont('Cantarel', 12)
         self.dbg_screen = pygame.display.set_mode((1000, 1000))
+        with self.dbg_thread_raedy_condition:
+            self.dbg_thread_raedy_condition.notify()
 
         clock = pygame.time.Clock()
         while self.dbg_running:
