@@ -67,18 +67,35 @@ class Anre:
         y = parse_coordinate(y, self.screencap.size[1])
         return x, y
 
-    def select_device(self, serial):
-        self.device = self.client.device(serial)
+    def select_device(self, preferred_devices: List[str]) -> None:
+        devices = self.client.devices()
+        
+        if len(devices) == 0:
+            raise IOError("no adb devices")
 
-    def auto_select_device(self, preferred_devices=None):
+        # select preferred device
+        for device_name in preferred_devices:
+            for device in devices:
+                if device.serial == device_name:
+                    self.device = device
+                    return
+        
+        # no devices matches any of the preferred device
+        device_names = ", ".join(device.serial for device in devices)
+        preferred_devices_names = ", ".join(preferred_devices)
+        raise IOError(f"None of the available devices ({device_names}) matches any of the preferred devices ({preferred_devices_names})")
+
+    def auto_select_device(self):
         devices = self.client.devices()
         if len(devices) == 0:
-            raise IOError("no devices")
-        elif len(devices) == 1:
+            raise IOError("no adb devices")
+        
+        if len(devices) == 1:
             self.device = devices[0]
-        else:
-            # TODO
-            raise IOError("multiple devices")
+            return
+        
+        device_names = ", ".join(device.serial for device in devices)
+        raise IOError(f"Multiple adb devices found({device_names}), please specify desired device")
         
     def update_screencap(self) -> PIL.Image.Image:
         result = self.device.screencap()

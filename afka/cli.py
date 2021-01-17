@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 import click
 import anre
@@ -10,14 +11,19 @@ LOG = logging.getLogger(__name__)
 
 @click.command()
 @click.option("--debug", is_flag=True, default=False)
-def main(debug):
+@click.option("--device")
+def main(debug: bool, device: Optional[str]):
     if debug:
         LOG.info("starting in debug mode")
         import anre_debug
         ar = anre_debug.AnreDebug()
     else:
         ar = anre.Anre()
-    ar.auto_select_device()
+
+    if device is None:
+        ar.auto_select_device()
+    else:
+        ar.select_device([device])
 
     LOG.info("device selected: " + ar.device.serial)
 
