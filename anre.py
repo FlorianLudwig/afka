@@ -96,19 +96,19 @@ class Anre:
         LOG.debug("pixel %i, %i color: %s", x, y, result)
         return result[:-1]  # remove alpha channel
 
-    def tap(self, x, y):
+    def tap(self, x, y) -> None:
         x, y = self.parse_coords(x, y)
         self.device.input_tap(x, y)
 
-    def swipe(self, start_x, start_y, end_x, end_y):
+    def swipe(self, start_x, start_y, end_x, end_y) -> None:
         start_x, start_y = self.parse_coords(start_x, start_y)
         end_x, end_y = self.parse_coords(end_x, end_y)
         self.device.input_swipe(start_x, start_y, end_x, end_y)
 
-    def start_app(self, activity):
+    def start_app(self, activity) -> None:
         print(self.device.shell(f"monkey -p {activity} 1"))
 
-    def close_app(self, activity):
+    def close_app(self, activity) -> None:
         print(self.device.shell("am force-stop " + activity))
     
     def _load_image(self, image_path: str, scale: float=1.0) -> tuple:
