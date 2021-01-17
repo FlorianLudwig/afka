@@ -119,6 +119,8 @@ class AnreDebug(anre.Anre):
         self.dbg_log.append(log_cls(org_x, org_y, x, y, surface, *args))
 
     def dbg_draw_loop(self):
+        global FONT
+        
         pygame.init()
         FONT = pygame.font.SysFont('Cantarel', 12)
         self.dbg_screen = pygame.display.set_mode((1000, 1000))
